@@ -17,11 +17,12 @@ axiosClient.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response.status === 401) {
+        const { response } = error;
+        if (response.status === 401) {
             localStorage.removeItem("ACCESS_TOKEN");
-            window.location.href = "/login";
+        } else {
+            throw error;
         }
-        return Promise.reject(error);
     }
 );
 
