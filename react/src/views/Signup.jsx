@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import axiosClient from "../axios-client";
+import { useRef, useState } from "react";
+import { useStateContext } from "../contexts/ContextProvider";
 
 export default function Signup() {
     const nameRef = useRef();
@@ -7,6 +9,7 @@ export default function Signup() {
     const passwordRef = useRef();
     const passwordConfirmationRef = useRef();
     const { setUser, setToken } = useStateContext();
+    const [errors, setErrors] = useState(null);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -26,14 +29,7 @@ export default function Signup() {
                 const response = err.response;
                 if (response && response.status === 422) {
                     const errors = response.data.errors;
-                    Object.keys(errors).forEach((key) => {
-                        const input = document.querySelector(
-                            `input[name="${key}"]`
-                        );
-                        if (input) {
-                            input.setCustomValidity(errors[key][0]);
-                        }
-                    });
+                    setErrors(errors);
                 }
             });
     };
@@ -41,7 +37,15 @@ export default function Signup() {
         <div className="login-signup-form animated fadeInDown">
             <div className="form">
                 <form action="" onSubmit={onSubmit}>
-                    <h1>Signup for free</h1>
+                    <h1 className="title">Signup for free</h1>
+
+                    {errors && (
+                        <div className="alert">
+                            {Object.keys(errors).map((key) => (
+                                <p key={key}>{errors[key]}</p>
+                            ))}
+                        </div>
+                    )}
                     <input ref={nameRef} type="text" placeholder="Full Name" />
                     <input
                         ref={emailRef}
